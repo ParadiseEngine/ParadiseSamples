@@ -1,6 +1,10 @@
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === '/') {
+      url.pathname = '/samples/';
+      return Response.redirect(url.href, 302);
+    }
     if (url.pathname === '/samples') {
       url.pathname = '/samples/';
       return Response.redirect(url.href, 308);

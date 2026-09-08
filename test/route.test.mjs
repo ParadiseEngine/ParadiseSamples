@@ -3,6 +3,11 @@ import assert from 'node:assert/strict';
 import worker from '../worker/index.mjs';
 
 const env = { PAGES_ORIGIN: 'https://paradise-samples.pages.dev' };
+test('unused apex redirects visitors to the gallery', async () => {
+  const result = await worker.fetch(new Request('https://paradiseengine.dev/'), env);
+  assert.equal(result.status, 302);
+  assert.equal(result.headers.get('location'), 'https://paradiseengine.dev/samples/');
+});
 test('canonical trailing slash preserves scene query', async () => {
   const result = await worker.fetch(new Request('https://paradiseengine.dev/samples?scene=pbr'), env);
   assert.equal(result.status, 308);

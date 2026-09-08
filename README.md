@@ -34,7 +34,8 @@ Links and runtime assets are relative so they work on Pages and beneath `/sample
 GitHub Actions builds all five samples, runs both console applications and a BT NativeAOT smoke
 test, then publishes the browser application. Pull requests build without deployment credentials.
 Successful main builds deploy to the `paradise-samples` Cloudflare Pages project, followed by
-the `paradise-samples-route` Worker that proxies only `paradiseengine.dev/samples` and `/samples/*`.
+the `paradise-samples-route` Worker on `paradiseengine.dev`. It redirects `/` to `/samples/`,
+canonicalizes `/samples`, proxies `/samples/*` to Pages, and returns 404 for other paths.
 
 One-time setup using Wrangler:
 
@@ -49,9 +50,10 @@ Account / Workers Scripts / Edit, Zone / Workers Routes / Edit and Zone / Zone /
 restricted to the deployment account and `paradiseengine.dev` zone. Wrangler's local OAuth session
 is for interactive deployment and is not a durable CI credential.
 
-The hostname must already be proxied through Cloudflare. Pages custom domains bind hostnames,
-so the Worker supplies the requested subpath while the existing root site continues to serve
-its other routes. `wrangler.jsonc` contains the origin and two route patterns.
+Wrangler's Worker custom domain provisions DNS and TLS for the previously unused apex hostname.
+Pages custom domains bind hostnames, so the Worker supplies the requested subpath.
+`wrangler.jsonc` contains the Pages origin and custom domain. If a main website is added later,
+move the Worker to `/samples` and `/samples/*` routes after configuring that site's proxied DNS.
 
 To update the engine, check out the intended commit in `engine/`, build and test, then commit
 the submodule pointer together with any required sample changes.

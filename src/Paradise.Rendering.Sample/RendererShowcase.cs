@@ -4,6 +4,7 @@ using Hexa.NET.ImGui;
 using Microsoft.Extensions.Logging;
 using Paradise.Features;
 using Paradise.Rendering.Pbr;
+using Paradise.Rendering.Graph;
 using Paradise.Rendering.WebGPU;
 using Paradise.Ui.ImGui;
 using Paradise.Windowing;
@@ -15,6 +16,27 @@ namespace Paradise.Rendering.Sample;
 /// <summary>Interactive renderer feature lab with an independent ImGui overlay.</summary>
 internal sealed class RendererShowcase : IDisposable
 {
+    private sealed class ShowcaseOverlay(WebGpuHostPass callback) : IRenderFeature
+    {
+        public FeatureDefinition Definition { get; } = new("showcase.overlay", true, "Showcase controls.");
+        public FrameRequirements Requires => FrameRequirements.None;
+        public void Resize(uint width, uint height) { }
+        public void Dispose() { }
+
+        public void Setup(in FrameContext frame)
+        {
+            if (!Program.Features.IsEnabled(PbrFeatures.Scene.Id)
+                || !Program.Features.IsEnabled(PbrFeatures.Composite.Id)
+                || !Program.Features.IsEnabled(PbrFeatures.Presentation.Id))
+            {
+                frame.Graph.AddRasterPass("ShowcaseFallbackClear", RenderPassEvent.Overlay, -1)
+                    .Color(0, FrameGraph.Backbuffer, LoadOp.Clear, clear: new ColorRgba(0.04f, 0.05f, 0.07f, 1))
+                    .Record(this, static (ShowcaseOverlay _, ref PassRecording _, int _) => { });
+            }
+            frame.Graph.AddHostPass("ImGui", RenderPassEvent.Overlay, callback, FrameGraph.Backbuffer);
+        }
+    }
+
     private readonly RendererShowcaseScene _showcase;
     private GiDemoScene Room => _showcase.Room;
     private readonly FeatureDefinition[] _definitions = PbrFeatures.All.ToArray();
@@ -198,6 +220,12 @@ internal sealed class RendererShowcase : IDisposable
         using var overlay = new ImGuiWebGpuRenderer(backend.NativeDevice, backend.NativeColorFormat);
         ui.AddDraw(scene.DrawPanel);
         var pending = new List<ImGuiTextureOp>();
+        ImGuiDrawSnapshot? snapshot = null;
+        scene.Renderer.Pipeline.Add(new ShowcaseOverlay(new WebGpuHostPass((encoder, view) =>
+        {
+            overlay.ApplyTextureOps(pending);
+            if (snapshot is not null) overlay.Render(encoder, view, window?.Width ?? width, window?.Height ?? height, snapshot);
+        })));
         var clock = Stopwatch.StartNew();
         var pointer = Vector2.Zero;
         var dragging = false;
@@ -258,36 +286,7 @@ internal sealed class RendererShowcase : IDisposable
                 if (step == scene._definitions.Length * 4) scene.Restore();
             }
             ui.Input.Tick(headless ? frame / 60.0 : clock.Elapsed.TotalSeconds);
-            var snapshot = ui.AcquireSnapshotForRender(pending, out _);
-            backend.OverlayPass = (encoder, view) =>
-            {
-                // Clear within the existing submission when the PBR chain cannot fill the
-                // backbuffer. The UI must remain usable without presenting a second frame.
-                if (!Program.Features.IsEnabled(PbrFeatures.Scene.Id)
-                    || !Program.Features.IsEnabled(PbrFeatures.Composite.Id)
-                    || !Program.Features.IsEnabled(PbrFeatures.Presentation.Id))
-                {
-                    var clear = new WebGpuSharp.RenderPassDescriptor
-                    {
-                        Label = "ShowcaseFallbackClear",
-                        ColorAttachments = new WebGpuSharp.RenderPassColorAttachment[]
-                        {
-                            new()
-                            {
-                                View = view,
-                                LoadOp = WebGpuSharp.LoadOp.Clear,
-                                StoreOp = WebGpuSharp.StoreOp.Store,
-                                ClearValue = new WebGpuSharp.Color(0.04, 0.05, 0.07, 1),
-                                DepthSlice = null,
-                            },
-                        },
-                    };
-                    var pass = encoder.BeginRenderPass(in clear);
-                    pass.End();
-                }
-                overlay.ApplyTextureOps(pending);
-                if (snapshot is not null) overlay.Render(encoder, view, window?.Width ?? width, window?.Height ?? height, snapshot);
-            };
+            snapshot = ui.AcquireSnapshotForRender(pending, out _);
             scene.Render(backend);
             if (benchmark && frame >= 60)
             {
@@ -308,7 +307,6 @@ internal sealed class RendererShowcase : IDisposable
                 maxCulled = Math.Max(maxCulled, scene.Renderer.Pipeline.Find<FrustumCullingFeature>()!.CulledDrawCount);
             }
         }
-        backend.OverlayPass = null;
         if (Value("--screenshot") is { } path)
         {
             var pixels = backend.ReadbackColor(out var w, out var h);

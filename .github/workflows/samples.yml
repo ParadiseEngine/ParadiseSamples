@@ -1,0 +1,83 @@
+name: Build and publish samples
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: samples-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: dotnet workload install wasm-tools
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages/_slang
+          key: slang-${{ runner.os }}-${{ hashFiles('engine/tools/slang/slang.manifest.json') }}
+      - run: npm ci
+      - run: npm test
+      - run: dotnet build ParadiseSamples.slnx -c Release
+      - name: Run console samples
+        run: |
+          dotnet run --project src/Paradise.BT.Sample -c Release --no-build
+          dotnet run --project src/Paradise.ECS.Sample -c Release --no-build
+      - name: NativeAOT smoke test
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang zlib1g-dev
+          dotnet publish src/Paradise.BT.Sample -c Release -r linux-x64 -o artifacts/bt
+          artifacts/bt/Paradise.BT.Sample
+      - name: Publish WebAssembly renderer
+        run: dotnet publish src/Paradise.Rendering.Browser.Sample -c Release -o artifacts/browser
+      - run: npm run build:site
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sample-site
+          path: dist
+          if-no-files-found: error
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: sample-site
+          path: dist
+      - name: Deploy Pages and domain route
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Set the CLOUDFLARE_API_TOKEN production secret'; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo 'Set the CLOUDFLARE_ACCOUNT_ID repository variable'; exit 1; }
+          npm run deploy:pages -- --branch main
+          npm run deploy:route
+      - name: Verify public gallery
+        run: curl --fail --retry 5 --retry-delay 5 https://paradiseengine.dev/samples/ | grep -q 'Small scenes'

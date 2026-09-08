@@ -1,0 +1,66 @@
+# Build outputs
+[Bb]in/
+# Not build output: the vendored macOS ktx (its dylibs beside it were never ignored). Without
+# this a fresh clone has the libraries and no executable.
+!/third_party/tools/KTX-Software/*/bin/
+[Oo]bj/
+[Oo]ut/
+[Pp]ublish/
+
+# Slang toolchain cache (RestoreSlang fallback path when NuGetPackageRoot is unset).
+# Production cache lives under ~/.nuget/packages/_slang and is shared across builds.
+.slang-cache/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userprefs
+*.sln.docstates
+*.sln.iml
+
+# NuGet and packages
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+
+# Test and coverage
+TestResults/
+coverage/
+coverage.cobertura.xml
+BenchmarkDotNet.Artifacts/
+
+# Generated
+**/Generated/
+*.binlog
+
+# Native libraries (downloaded at build time by ECS)
+libs/*.dll
+libs/*.dylib
+libs/*.so
+
+# Debug symbols / AOT intermediates
+*.pdb
+*.dSYM/
+*.ilk
+*.exp
+
+# Unity asset uid files
+*.uid
+
+# Claude Code / Codex agent config (local-only)
+/.claude/
+/.Codex/
+# Sample build and deployment output
+/artifacts/
+/artifacts-*.log
+/dist/
+/node_modules/
+/.wrangler/

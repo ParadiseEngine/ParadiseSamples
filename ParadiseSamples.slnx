@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="src/Paradise.BT.Sample/Paradise.BT.Sample.csproj" />
+  <Project Path="src/Paradise.ECS.Sample/Paradise.ECS.Sample.csproj" />
+  <Project Path="src/Paradise.Rendering.Sample/Paradise.Rendering.Sample.csproj" />
+  <Project Path="src/Paradise.Rendering.Browser.Sample/Paradise.Rendering.Browser.Sample.csproj" />
+  <Project Path="src/Paradise.Ui.ImGui.Sample/Paradise.Ui.ImGui.Sample.csproj" />
+</Solution>

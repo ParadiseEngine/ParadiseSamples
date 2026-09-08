@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Paradise.Ui.ImGui.Sample</RootNamespace>
+    <!-- io.IniFilename is a byte* — see the note where it is cleared. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../engine/src/Paradise.Ui.ImGui/Paradise.Ui.ImGui.csproj" />
+    <ProjectReference Include="../../engine/src/Paradise.Rendering.WebGPU/Paradise.Rendering.WebGPU.csproj" />
+    <!-- Forward the window backend's WindowEvent stream through IWindow. -->
+    <ProjectReference Include="../../engine/src/Paradise.Windowing.Sdl/Paradise.Windowing.Sdl.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Fonts come out of a mount; this sample builds the system-font overlay. -->
+    <PackageReference Include="Zio" />
+  </ItemGroup>
+
+</Project>

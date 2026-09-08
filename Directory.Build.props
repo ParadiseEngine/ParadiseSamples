@@ -1,0 +1,6 @@
+<Project>
+  <Import Project="engine/src/Directory.Build.props" />
+  <PropertyGroup>
+    <ShouldUnsetParentConfigurationAndPlatform>false</ShouldUnsetParentConfigurationAndPlatform>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,12 @@
+{
+  "name": "paradise-samples",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:site": "node scripts/build-site.mjs",
+    "test": "node --test",
+    "deploy:pages": "wrangler pages deploy dist --project-name paradise-samples",
+    "deploy:route": "wrangler deploy"
+  },
+  "devDependencies": { "wrangler": "4.129.1" }
+}

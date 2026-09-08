@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../engine/src/Paradise.BT/Paradise.BT.csproj" />
+    <ProjectReference Include="../../engine/src/Paradise.BT.Builder/Paradise.BT.Builder.csproj" />
+    <ProjectReference Include="../../engine/src/Paradise.BT.Nodes/Paradise.BT.Nodes.csproj" />
+
+    <!-- Both generators are required to bind BT blackboards to ECS queryables. -->
+    <ProjectReference Include="../../engine/src/Paradise.ECS/Paradise.ECS.csproj" />
+    <ProjectReference Include="../../engine/src/Paradise.ECS.Generators/Paradise.ECS.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <!-- Analyzers do not flow through project references; local nodes need this generator. -->
+    <ProjectReference Include="../../engine/src/Paradise.BT.Generators/Paradise.BT.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+</Project>

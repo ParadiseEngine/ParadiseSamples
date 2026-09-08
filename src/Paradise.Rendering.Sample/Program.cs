@@ -278,7 +278,7 @@ internal static class Program
                 }
                 case SceneKind.GiDemo:
                 {
-                    using var scene = new GiDemoScene(renderer, InitialWidth, InitialHeight, glbPath, s_log.CreateLogger("PbrRenderer"));
+                    using var scene = new GiDemoScene(renderer, Features, InitialWidth, InitialHeight, glbPath, s_log.CreateLogger("PbrRenderer"));
 #if PARADISE_PROFILING
                     var bench = s_bench ? new PassBenchmark(renderer) : null;
 #endif
@@ -360,7 +360,7 @@ internal static class Program
             using var cubeScene = kind == SceneKind.Cube ? new LitCubeScene(renderer, surfaceDesc.Width, surfaceDesc.Height) : null;
             using var computeScene = kind == SceneKind.Compute ? new ComputeScene(renderer) : null;
             using var pbrScene = kind == SceneKind.Pbr ? new PbrViewerScene(renderer, surfaceDesc.Width, surfaceDesc.Height, glbPath, s_log.CreateLogger("PbrRenderer")) : null;
-            using var giScene = kind == SceneKind.GiDemo ? new GiDemoScene(renderer, surfaceDesc.Width, surfaceDesc.Height, glbPath, s_log.CreateLogger("PbrRenderer")) : null;
+            using var giScene = kind == SceneKind.GiDemo ? new GiDemoScene(renderer, Features, surfaceDesc.Width, surfaceDesc.Height, glbPath, s_log.CreateLogger("PbrRenderer")) : null;
             using var ssrScene = kind == SceneKind.SsrDemo ? new SsrDemoScene(renderer, surfaceDesc.Width, surfaceDesc.Height, s_log.CreateLogger("PbrRenderer")) : null;
 
             var quit = false;

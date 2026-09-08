@@ -30,6 +30,8 @@
 
   <ItemGroup>
     <SlangShader Include="Shaders/**/*.slang" />
+    <SlangShader Include="../Shared/Shaders/showcaseGlass.slang" />
+    <Compile Include="../Shared/*.cs" Link="Shared/%(Filename)%(Extension)" />
     <SlangIncludeDir Include="$(MSBuildThisFileDirectory)../../engine/src/Paradise.Rendering.Pbr/Shaders/" />
     <SlangShaderInclude Include="$(MSBuildThisFileDirectory)../../engine/src/Paradise.Rendering.Pbr/Shaders/Common/**/*.slang" />
   </ItemGroup>

@@ -1,8 +1,12 @@
-import { cp, mkdir, readdir, stat } from 'node:fs/promises';
+import { cp, mkdir, readdir, rm, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const publish = resolve(process.argv[2] || 'artifacts/browser/wwwroot');
 await stat(`${publish}/index.html`);
+const root = fileURLToPath(new URL('../', import.meta.url));
+if (resolve('.') !== resolve(root)) throw new Error('Run build:site from the sample repository root.');
+await rm(resolve(root, 'dist'), { recursive: true, force: true });
 await mkdir('dist/rendering', { recursive: true });
 await cp('site', 'dist', { recursive: true });
 await cp(publish, 'dist/rendering', { recursive: true });

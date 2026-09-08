@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Paradise.Assets.Gltf;
 using Paradise.Rendering;
 using Paradise.Rendering.Pbr;
-using Paradise.Rendering.WebGPU;
+using Paradise.Features;
 
 namespace Paradise.Rendering.Sample;
 
@@ -82,11 +82,11 @@ internal sealed class GiDemoScene : IDisposable
         });
     }
 
-    public GiDemoScene(WebGpuRenderer renderer, uint width, uint height, string? modelPath, ILogger? logger = null)
+    public GiDemoScene(IRenderer renderer, FeatureSwitches features, uint width, uint height, string? modelPath, ILogger? logger = null)
     {
         _width = Math.Max(1, width);
         _height = Math.Max(1, height);
-        _pbr = new PbrRenderer(renderer, Program.Features, _width, _height, logger: logger);
+        _pbr = new PbrRenderer(renderer, features, _width, _height, logger: logger);
         _scene.Taa = new PbrTaa { Enabled = Array.IndexOf(Environment.GetCommandLineArgs(), "--taa") >= 0 };
         _scene.Fxaa = new PbrFxaa { Enabled = Array.IndexOf(Environment.GetCommandLineArgs(), "--fxaa") >= 0 };
 

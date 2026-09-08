@@ -1,26 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <title>Paradise browser renderer sample</title>
+  <title>Renderer laboratory · Paradise Engine</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preload" id="webassembly" />
   <script type="importmap"></script>
   <script type="module" src="main.js"></script>
   <style>
-    body { font-family: ui-monospace, monospace; background: #14161a; color: #dde1e6; margin: 16px; }
-    h1 { font-size: 1.1rem; font-weight: 600; }
-    canvas { border: 1px solid #333a44; display: block; margin: 12px 0; max-width: 100%; }
-    p { margin: 4px 0; }
+    :root { color-scheme:dark; font-family:system-ui,sans-serif; background:#10151c; color:#e9eef4; }
+    body { margin:0; } a { color:#a5dfb8; text-underline-offset:3px; }
+    header { padding:18px 24px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #354050; gap:20px; }
+    h1 { font-size:1.1rem; margin:0; } h2 { font-size:.95rem; margin:22px 0 12px; }
+    main { display:flex; min-height:calc(100vh - 64px); }
+    aside { width:300px; flex-shrink:0; padding:22px; background:#19222d; border-right:1px solid #354050; }
+    aside[hidden] { display:none; } p { line-height:1.5; color:#b6c2d1; font-size:.85rem; }
+    .viewport { flex:1; min-width:0; padding:24px; }
+    canvas { display:block; width:100%; height:auto; background:#10151c; border:1px solid #354050; border-radius:8px; touch-action:none; }
+    label { display:flex; align-items:center; gap:10px; margin:10px 0; font-size:.85rem; }
+    input[type=checkbox] { accent-color:#9dd8b0; width:16px; height:16px; }
+    input[type=range] { min-width:0; flex:1; accent-color:#9dd8b0; }
+    label span { min-width:84px; } output { min-width:32px; text-align:right; font-variant-numeric:tabular-nums; }
+    button { background:#27394a; border:1px solid #506175; color:#eef3f8; border-radius:6px; padding:9px 12px; cursor:pointer; }
+    button:hover { background:#354b60; }
+    #features { max-height:38vh; overflow:auto; border-block:1px solid #354050; padding:6px 0; }
+    #stats,#draws { font-variant-numeric:tabular-nums; } #status { overflow-wrap:anywhere; }
+    pre { white-space:pre-wrap; color:#b6c2d1; font-size:.75rem; }
+    summary { cursor:pointer; font-size:.85rem; margin:20px 0 10px; }
+    @media(max-width:800px) { main { flex-direction:column-reverse; } aside { width:auto; border-right:0; } .viewport { padding:16px; } #features { max-height:300px; } }
   </style>
 </head>
-
 <body>
-  <h1>Paradise.Rendering.Browser &mdash; WebGPU acceptance sample</h1>
-  <canvas id="gpu-canvas" width="960" height="600"></canvas>
-  <p id="stats">waiting for the first frame&hellip;</p>
-  <p id="status">booting .NET runtime&hellip;</p>
+  <header><h1>Paradise Engine / Renderer laboratory</h1><a href="../">All samples</a></header>
+  <main>
+    <aside id="controls" hidden>
+      <p>The native showcase, running on browser WebGPU. Drag to orbit; scroll to zoom.</p>
+      <label><input type="checkbox" data-option="pause">Pause animation</label>
+      <button id="restore" type="button">Restore preset</button> <button id="all-off" type="button">All off</button>
+      <h2>Rendering features</h2><div id="features"></div>
+      <h2>Scene controls</h2>
+      <label><input type="checkbox" data-option="ssao" checked>SSAO</label>
+      <label><input type="checkbox" data-option="soft" checked>Soft shadows (PCSS)</label>
+      <label><span>Cascades</span><input aria-label="Cascades" type="range" data-option="cascades" min="1" max="4" value="4"><output>4</output></label>
+      <label><span>PSSM split</span><input aria-label="PSSM split" type="range" data-option="split" min="0" max="1" step=".05" value=".65"><output>.65</output></label>
+      <label><span>Focus (m)</span><input aria-label="Focus distance" type="range" data-option="focus" min="2" max="15" step=".1" value="8"><output>8</output></label>
+      <label><span>Exposure EV</span><input aria-label="Exposure EV" type="range" data-option="exposure" min="-3" max="3" step=".1" value=".2"><output>.2</output></label>
+      <p>Occlusion uses individual draws. Turn it off to compare instancing. Depth prepass feeds screen-space effects; motion vectors feed TAA and motion blur.</p>
+    </aside>
+    <section class="viewport">
+      <canvas id="gpu-canvas" width="1280" height="800" aria-label="Renderer scene"></canvas>
+      <p id="stats">Waiting for the first frame…</p><p id="draws"></p>
+      <p id="status" role="status">Loading .NET and WebGPU…</p>
+      <details id="passes-panel" hidden><summary>Last frame passes</summary><pre id="passes"></pre></details>
+    </section>
+  </main>
 </body>
-
 </html>

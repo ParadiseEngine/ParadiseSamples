@@ -15,7 +15,12 @@ dotnet run --project src/Paradise.Rendering.Sample -p:ParadiseProfiling=true -- 
 
 Use .NET SDK 10.0.400 or later (see `global.json`). The native renderer and ImGui samples need a
 desktop graphics environment. The BT and ECS samples are console applications. The browser sample
-provides lit cube, PBR/shadows and GPU compute scenes; the full native showcase has not been ported.
+provides the full renderer showcase plus lit cube, PBR/shadows and GPU compute scenes.
+The showcase shares its scene, animation and glass shader with the native sample through `src/Shared`.
+Browser controls replace the native ImGui overlay: orbit/zoom, feature switches, pause, shadow
+settings, focus and exposure. The embedded `engine.toml` supplies the same starting preset.
+Browser statistics report CPU submission time and pass names; native GPU timing readback is not
+exposed by the browser backend.
 
 ## Build the website
 

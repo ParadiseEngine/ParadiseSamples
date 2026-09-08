@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using Paradise.Diagnostics;
+using Paradise.Features;
+using Paradise.Rendering.Pbr;
+using Paradise.Rendering.Sample;
 
 namespace Paradise.Rendering.Browser.Sample;
 
 /// <summary>Renders browser sample scenes through requestAnimationFrame and publishes DOM status
 /// markers.</summary>
 /// <remarks>The page calls InitAsync and OnAnimationFrame directly. ?scene=cube selects the lit
-/// cube; ?scene=pbr selects the PBR shadow scene. DOM markers let automated drivers wait for
+/// cube; ?scene=pbr selects the PBR shadow scene; ?scene=showcase selects the shared renderer lab. DOM markers let automated drivers wait for
 /// completed frames.</remarks>
 [SupportedOSPlatform("browser")]
 public static partial class Program
@@ -32,6 +35,12 @@ public static partial class Program
     private static LitCubeScene? s_cubeScene;
     private static PbrShadowScene? s_pbrScene;
     private static ComputeScene? s_computeScene;
+    private static RendererShowcaseScene? s_showcaseScene;
+    private static FeatureSwitches s_features = new();
+    private static readonly FeatureDefinition[] s_definitions = PbrFeatures.All.ToArray();
+    private static bool[] s_initial = [];
+    private static bool s_paused;
+    private static bool s_softShadows = true;
     private static string s_sceneName = "cube";
     private static int s_frames;
     private static bool s_reported;
@@ -72,6 +81,14 @@ public static partial class Program
 
             switch (s_sceneName)
             {
+                case "showcase":
+                    using (var preset = typeof(Program).Assembly.GetManifestResourceStream("engine.toml")!)
+                        s_features = new FeatureSwitches(TomlEngineConfiguration.Read(preset));
+                    PbrFeatures.DeclareAll(s_features);
+                    s_initial = s_definitions.Select(d => s_features.IsEnabled(d.Id)).ToArray();
+                    s_showcaseScene = new RendererShowcaseScene(s_renderer, s_features, (uint)width, (uint)height,
+                        ParadiseConsole.CreateLogger("PbrRenderer", new ParadiseConsoleOptions { MinLevel = ParseLevel(logLevel) }));
+                    break;
                 case "cube":
                     s_cubeScene = new LitCubeScene(s_renderer, (uint)width, (uint)height);
                     break;
@@ -84,7 +101,7 @@ public static partial class Program
                     s_computeScene = new ComputeScene(s_renderer);
                     break;
                 default:
-                    throw new ArgumentException($"Unknown scene '{s_sceneName}' — expected 'cube', 'pbr' or 'compute'.", nameof(scene));
+                    throw new ArgumentException($"Unknown scene '{s_sceneName}' — expected 'showcase', 'cube', 'pbr' or 'compute'.", nameof(scene));
             }
             SetStatusJs($"running scene={s_sceneName} adapter={s_renderer.AdapterInfo}");
             s_startMs = s_clock.Elapsed.TotalMilliseconds;
@@ -109,6 +126,7 @@ public static partial class Program
             s_cubeScene?.RenderFrame();
             s_pbrScene?.RenderFrame();
             s_computeScene?.RenderFrame();
+            s_showcaseScene?.RenderFrame(s_paused, s_softShadows);
             var nowMs = s_clock.Elapsed.TotalMilliseconds;
             s_frames++;
             s_framesInWindow++;

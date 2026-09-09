@@ -145,20 +145,22 @@ internal sealed class RendererShowcase : IDisposable
     private void DrawGiControls()
     {
         if (!ImGuiApi.CollapsingHeader("DDGI")) return;
-        var gi = Scene.Gi;
+        var feature = Renderer.Pipeline.Find<ProbeGiFeature>()!;
+        var debug = Renderer.Pipeline.Find<ProbeGiDebugFeature>()!;
+        var gi = feature.Settings;
         var enabled = gi.Enabled;
-        var show = gi.ShowProbes;
+        var show = Program.Features.IsEnabled(PbrFeatures.GiProbes.Id);
         var spacing = gi.ProbeSpacing;
         var rays = gi.RaysPerProbe;
         var budget = gi.MaxProbes;
         var updates = gi.ProbesPerFrame;
         var hysteresis = gi.Hysteresis;
         var intensity = gi.Intensity;
-        var radius = gi.ProbeRadius;
+        var radius = debug.ProbeRadius;
         var normalBias = gi.NormalBias;
         var viewBias = gi.ViewBias;
         ImGuiApi.Checkbox("Enable DDGI", ref enabled);
-        ImGuiApi.Checkbox("Show probes", ref show);
+        if (ImGuiApi.Checkbox("Show probes", ref show)) Program.Features.Set(PbrFeatures.GiProbes.Id, show);
         ImGuiApi.SliderFloat("Probe radius (m)", ref radius, 0.01f, 0.5f);
         if (gi.Volume is null)
         {
@@ -172,13 +174,13 @@ internal sealed class RendererShowcase : IDisposable
         ImGuiApi.SliderFloat("GI intensity", ref intensity, 0, 4);
         ImGuiApi.SliderFloat("Normal bias", ref normalBias, 0, 1);
         ImGuiApi.SliderFloat("View bias", ref viewBias, 0, 1);
-        Scene.Gi = gi with
+        debug.ProbeRadius = radius;
+        feature.Settings = gi with
         {
-            Enabled = enabled, ShowProbes = show, ProbeSpacing = spacing, ProbeRadius = radius,
+            Enabled = enabled, ProbeSpacing = spacing,
             RaysPerProbe = rays, MaxProbes = budget, ProbesPerFrame = updates,
             Hysteresis = hysteresis, Intensity = intensity, NormalBias = normalBias, ViewBias = viewBias,
         };
-        var feature = Renderer.Pipeline.Find<ProbeGiFeature>()!;
         ImGuiText.Show($"Active probes: {feature.ProbeCount}; green = active, red = inactive");
         if (feature.ActiveVolume is { } volume)
             ImGuiText.Show($"Grid: {volume.CountX} x {volume.CountY} x {volume.CountZ}; spacing: {volume.Spacing.X:F2} m");

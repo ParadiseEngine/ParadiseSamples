@@ -133,7 +133,7 @@ internal sealed class GiDemoScene : IDisposable
         };
         _scene.Tonemap = new PbrTonemap { Mode = PbrTonemapMode.Filmic, Exposure = 0.6f, White = 4f };
         _scene.Bloom = new PbrBloom { Enabled = Array.IndexOf(Environment.GetCommandLineArgs(), "--no-bloom") < 0, Threshold = 1.2f, Intensity = 0.25f };
-        _scene.Gi = new PbrGi { Enabled = ProbeGi, RaysPerProbe = RaysPerProbe, Hysteresis = 0.97f, MaxProbes = MaxProbes, ProbesPerFrame = ProbesPerFrame };
+        _pbr.Pipeline.Find<ProbeGiFeature>()!.Settings = new PbrGi { Enabled = ProbeGi, RaysPerProbe = RaysPerProbe, Hysteresis = 0.97f, MaxProbes = MaxProbes, ProbesPerFrame = ProbesPerFrame };
         _scene.RayTracedAo = new PbrRayTracedAo { Enabled = RayTracedAo, RaysPerPixel = 8, MaxDistance = 1.5f };
         _scene.Ssr = new PbrScreenSpaceReflection { Enabled = Reflections, MaxDistance = 12f };
         _scene.Fog = new PbrFog

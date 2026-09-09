@@ -1,6 +1,6 @@
 # Paradise Engine samples
 
-Interactive browser demos: **https://paradiseengine.dev/samples/**.
+Interactive browser demos: **[paradiseengine.dev/samples](https://paradiseengine.dev/samples/)**.
 
 This repository owns the engine's five example applications. A pinned engine submodule keeps
 sample code, shaders and source generators compatible without requiring an unpublished NuGet release.
@@ -38,18 +38,45 @@ Links and runtime assets are relative so they work on Pages and beneath `/sample
 
 GitHub Actions builds all five samples, runs both console applications and a BT NativeAOT smoke
 test, then publishes the browser application. Pull requests build without deployment credentials.
-Successful main builds deploy to the `paradise-samples` Cloudflare Pages project, followed by
+Successful `main` builds deploy to the `paradise-samples` Cloudflare Pages project, followed by
 the `paradise-samples-route` Worker on `paradiseengine.dev`. It redirects `/` to `/samples/`,
 canonicalizes `/samples`, proxies `/samples/*` to Pages, and returns 404 for other paths.
 
-One-time setup using Wrangler:
+### Automatic releases
+
+Every push to `main` (including a merged sample PR or engine submodule update) runs
+[Build, deploy and release samples](.github/workflows/samples.yml):
+
+1. Build and validate the samples, then assemble the browser gallery.
+2. Deploy that build to Cloudflare and verify the public gallery.
+3. Publish a [GitHub release](https://github.com/ParadiseEngine/ParadiseSamples/releases)
+   tagged `samples-<run number>` at the source commit, with `sample-site.tar.gz` containing
+   the deployed gallery and WebAssembly assets.
+
+Releases are created only after deployment succeeds. Pull requests only build and test.
+Extract the archive and serve it over HTTP with WebAssembly MIME support to run it locally;
+a WebGPU-capable browser is required. Native executables are not included in this archive.
+
+To release manually, open **Actions → Build, deploy and release samples → Run workflow**
+and select `main`. To retry a failed deployment or release, use **Re-run failed jobs** on
+that run. Reruns reuse its release tag and replace the archive if the release already exists.
+An engine release alone does not update samples: commit the tested `engine/` pointer to
+`main` to publish a compatible sample build.
+
+### Cloudflare configuration
+
+The repository variable `CLOUDFLARE_ACCOUNT_ID` and the `production` environment secret
+`CLOUDFLARE_API_TOKEN` are configured for this repository. The workflow uses GitHub's
+built-in token for releases; only the release job receives `contents: write`.
+
+For a fresh deployment, create the Pages project once using Wrangler:
 
 ```sh
 npx wrangler login
 npx wrangler pages project create paradise-samples --production-branch main
 ```
 
-Configure the GitHub repository variable `CLOUDFLARE_ACCOUNT_ID` and the production environment
+When setting up another repository, configure the GitHub repository variable `CLOUDFLARE_ACCOUNT_ID` and the production environment
 secret `CLOUDFLARE_API_TOKEN`. The token needs Account / Cloudflare Pages / Edit,
 Account / Workers Scripts / Edit, Zone / Workers Routes / Edit and Zone / Zone / Read,
 restricted to the deployment account and `paradiseengine.dev` zone. Wrangler's local OAuth session

@@ -1,4 +1,4 @@
-name: Build and publish samples
+name: Build, deploy and release samples
 
 on:
   push:
@@ -58,7 +58,9 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
-    environment: production
+    environment:
+      name: production
+      url: https://paradiseengine.dev/samples/
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -81,3 +83,42 @@ jobs:
           npm run deploy:route
       - name: Verify public gallery
         run: curl --fail --retry 5 --retry-delay 5 https://paradiseengine.dev/samples/ | grep -q 'Small scenes'
+
+  release:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: sample-site
+          path: dist
+      - name: Package deployed website
+        run: tar -czf sample-site.tar.gz -C dist .
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: samples-${{ github.run_number }}
+          RELEASE_COMMIT: ${{ github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          cat > release-notes.md <<EOF
+          Browser samples: https://paradiseengine.dev/samples/
+
+          The attached archive contains the exact gallery and WebAssembly assets deployed by this run.
+          Serve the extracted files over HTTP with WebAssembly MIME support; the demos require a WebGPU-capable browser.
+
+          Source commit: ${RELEASE_COMMIT}
+          Build and validation: ${RUN_URL}
+          EOF
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" sample-site.tar.gz --clobber
+          else
+            gh release create "$RELEASE_TAG" sample-site.tar.gz \
+              --target "$RELEASE_COMMIT" \
+              --title "Samples ${RELEASE_TAG#samples-}" \
+              --notes-file release-notes.md
+          fi

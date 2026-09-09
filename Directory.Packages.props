@@ -1,3 +1,20 @@
 <Project>
-  <Import Project="engine/src/Directory.Packages.props" />
+  <ItemGroup>
+    <PackageVersion Include="Paradise.BT" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.BT.Builder" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.BT.Nodes" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.Diagnostics" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.ECS" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.ECS.Tag" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.Features.Toml" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.Rendering" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.Rendering.Browser" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.Rendering.Pbr" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.Rendering.WebGPU" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.Ui.ImGui" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.Windowing" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.Windowing.Sdl" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="ppy.SDL3-CS" Version="2026.722.0" />
+    <PackageVersion Include="Zio" Version="0.24.0" />
+  </ItemGroup>
 </Project>

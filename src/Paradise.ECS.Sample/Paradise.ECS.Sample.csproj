@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="../../engine/src/Paradise.ECS.Common.props" />
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <OutputType>Exe</OutputType>
@@ -14,9 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../engine/src/Paradise.ECS/Paradise.ECS.csproj" />
-    <ProjectReference Include="../../engine/src/Paradise.ECS.Tag/Paradise.ECS.Tag.csproj" />
-    <ProjectReference Include="../../engine/src/Paradise.ECS.Generators/Paradise.ECS.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <PackageReference Include="Paradise.ECS" />
+    <PackageReference Include="Paradise.ECS.Tag" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,7 +3,7 @@
 Run from the repository root (requires .NET 10 and a WebGPU-capable GPU):
 
 ```sh
-dotnet run --project src/Paradise.Rendering.Sample -p:ParadiseProfiling=true -- --showcase --config engine.toml
+dotnet run --project src/Paradise.Rendering.Sample -- --showcase --config engine.toml
 ```
 
 This procedural Cornell room needs no external assets. Drag outside the ImGui panel to
@@ -39,7 +39,7 @@ rows. Expand **Last frame passes** to inspect the actual graph. The sample uses 
 For a reproducible GPU/input smoke check and screenshot:
 
 ```sh
-dotnet run --project src/Paradise.Rendering.Sample -p:ParadiseProfiling=true -- --showcase --config engine.toml --headless 8 --sweep --screenshot /tmp/renderer-showcase.png
+dotnet run --project src/Paradise.Rendering.Sample -- --showcase --config engine.toml --headless 8 --sweep --screenshot /tmp/renderer-showcase.png
 ```
 
 The sweep clicks the real ImGui **All off** and **Restore** buttons through window input,
@@ -65,7 +65,7 @@ unavailable; feature controls still work.
 For a sustained run on another device:
 
 ```sh
-dotnet run --project src/Paradise.Rendering.Sample -p:ParadiseProfiling=true -- --showcase --config engine.toml --headless 6000 --bench
+dotnet run --project src/Paradise.Rendering.Sample -- --showcase --config engine.toml --headless 6000 --bench
 ```
 
 After 60 warm-up frames, `--bench` reports average iteration time, process resident memory,
@@ -79,8 +79,4 @@ intensity and lookup biases. Green markers are active; red markers are inactive.
 respect scene depth and show relocated positions. Spacing is a minimum: the probe budget
 can force a wider grid. An authored volume uses its own spacing and counts.
 
-To run against an engine checkout containing these controls before updating the submodule:
-
-```sh
-dotnet run --project src/Paradise.Rendering.Sample -p:ParadiseEngineRoot=/absolute/path/to/ParadiseEngine -- --showcase --config engine.toml
-```
+The sample uses the published engine version in `Directory.Build.props`.

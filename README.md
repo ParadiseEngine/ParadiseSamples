@@ -2,15 +2,16 @@
 
 Interactive browser demos: **[paradiseengine.dev/samples](https://paradiseengine.dev/samples/)**.
 
-This repository owns the engine's five example applications. A pinned engine submodule keeps
-sample code, shaders and source generators compatible without requiring an unpublished NuGet release.
+This repository owns the engine's five example applications. All engine dependencies use published NuGet packages at the single
+`ParadiseVersion` in `Directory.Build.props`. Runtime packages include their source generators;
+the PBR package supplies shader includes and Slang build tooling. No engine checkout is required.
 
 ```sh
-git clone --recurse-submodules https://github.com/ParadiseEngine/ParadiseSamples.git
+git clone https://github.com/ParadiseEngine/ParadiseSamples.git
 cd ParadiseSamples
 dotnet workload install wasm-tools
 dotnet build ParadiseSamples.slnx -c Release
-dotnet run --project src/Paradise.Rendering.Sample -p:ParadiseProfiling=true -- --showcase --config engine.toml --bench
+dotnet run --project src/Paradise.Rendering.Sample -- --showcase --config engine.toml --bench
 ```
 
 Use .NET SDK 10.0.400 or later (see `global.json`). The native renderer and ImGui samples need a
@@ -38,30 +39,37 @@ Links and runtime assets are relative so they work on Pages and beneath `/sample
 
 GitHub Actions builds all five samples, runs both console applications and a BT NativeAOT smoke
 test, then publishes the browser application. Pull requests build without deployment credentials.
-Successful `main` builds deploy to the `paradise-samples` Cloudflare Pages project, followed by
-the `paradise-samples-route` Worker on `paradiseengine.dev`. It redirects `/` to `/samples/`,
+Version tags deploy to the `paradise-samples` Cloudflare Pages project, followed by the
+`paradise-samples-route` Worker on `paradiseengine.dev`. It redirects `/` to `/samples/`,
 canonicalizes `/samples`, proxies `/samples/*` to Pages, and returns 404 for other paths.
 
-### Automatic releases
+### Versioned releases
 
-Every push to `main` (including a merged sample PR or engine submodule update) runs
-[Build, deploy and release samples](.github/workflows/samples.yml):
+Sample versions match engine versions. To release a new version:
 
-1. Build and validate the samples, then assemble the browser gallery.
-2. Deploy that build to Cloudflare and verify the public gallery.
-3. Publish a [GitHub release](https://github.com/ParadiseEngine/ParadiseSamples/releases)
-   tagged `samples-<run number>` at the source commit, with `sample-site.tar.gz` containing
-   the deployed gallery and WebAssembly assets.
+1. Publish the engine's NuGet packages first and wait for them to be available on nuget.org.
+2. Set `ParadiseVersion` in `Directory.Build.props` to that version, update sample code as needed,
+   and merge the validated changes into `main`.
+3. Push the matching tag in this repository, for example:
 
-Releases are created only after deployment succeeds. Pull requests only build and test.
-Extract the archive and serve it over HTTP with WebAssembly MIME support to run it locally;
-a WebGPU-capable browser is required. Native executables are not included in this archive.
+   ```sh
+   git switch main
+   git pull --ff-only
+   git tag v0.46.0
+   git push origin v0.46.0
+   ```
 
-To release manually, open **Actions → Build, deploy and release samples → Run workflow**
-and select `main`. To retry a failed deployment or release, use **Re-run failed jobs** on
-that run. Reruns reuse its release tag and replace the archive if the release already exists.
-An engine release alone does not update samples: commit the tested `engine/` pointer to
-`main` to publish a compatible sample build.
+[Build, deploy and release samples](.github/workflows/samples.yml) verifies that the tag matches
+`ParadiseVersion`, restores NuGet dependencies, builds and tests, then deploys to Cloudflare.
+After public-gallery verification succeeds, it creates a GitHub release under the same tag
+and attaches `sample-site.tar.gz` containing the deployed gallery and WebAssembly assets.
+Extract and serve the archive over HTTP with WebAssembly MIME support in a WebGPU-capable browser.
+Native executables are not included.
+
+Pushes to `main` and pull requests build and test without releasing. A manual workflow run on
+`main` also validates only; use a version tag to publish. To retry a failed tagged release,
+use **Re-run failed jobs** on that run. Reruns reuse the tag and replace the archive if needed.
+Publishing an engine tag does not automatically tag this repository.
 
 ### Cloudflare configuration
 
@@ -87,5 +95,5 @@ Pages custom domains bind hostnames, so the Worker supplies the requested subpat
 `wrangler.jsonc` contains the Pages origin and custom domain. If a main website is added later,
 move the Worker to `/samples` and `/samples/*` routes after configuring that site's proxied DNS.
 
-To update the engine, check out the intended commit in `engine/`, build and test, then commit
-the submodule pointer together with any required sample changes.
+Update `ParadiseVersion` and any required sample code together. Every Paradise package uses
+that central version; local engine sources are never substituted for NuGet packages.

@@ -127,6 +127,7 @@ internal sealed class RendererShowcase : IDisposable
         if (ImGuiApi.SliderFloat("PSSM split", ref _split, 0, 1)) Renderer.Pipeline.Find<ShadowFeature>()!.CascadeSplitLambda = _split;
         if (ImGuiApi.SliderFloat("Focus (m)", ref _focus, 2, 15)) Scene.DepthOfField = Scene.DepthOfField with { FocusDistance = _focus };
         if (ImGuiApi.SliderFloat("Exposure EV", ref _exposure, -3, 3)) Scene.Exposure = Scene.Exposure with { CompensationEv = _exposure };
+        DrawGiControls();
         var batching = Renderer.Pipeline.Find<InstancingFeature>()!;
         ImGuiText.Show($"Scene draws: {batching.DrawCalls}; saved: {batching.SavedDrawCalls}");
         ImGuiText.Show($"Frustum rejected: {Renderer.Pipeline.Find<FrustumCullingFeature>()!.CulledDrawCount}");
@@ -139,6 +140,50 @@ internal sealed class RendererShowcase : IDisposable
                 foreach (var pass in Renderer.LastPassNames) ImGuiText.Show(pass);
         }
         ImGuiApi.End();
+    }
+
+    private void DrawGiControls()
+    {
+        if (!ImGuiApi.CollapsingHeader("DDGI")) return;
+        var feature = Renderer.Pipeline.Find<ProbeGiFeature>()!;
+        var debug = Renderer.Pipeline.Find<ProbeGiDebugFeature>()!;
+        var gi = feature.Settings;
+        var enabled = gi.Enabled;
+        var show = Program.Features.IsEnabled(PbrFeatures.GiProbes.Id);
+        var spacing = gi.ProbeSpacing;
+        var rays = gi.RaysPerProbe;
+        var budget = gi.MaxProbes;
+        var updates = gi.ProbesPerFrame;
+        var hysteresis = gi.Hysteresis;
+        var intensity = gi.Intensity;
+        var radius = debug.ProbeRadius;
+        var normalBias = gi.NormalBias;
+        var viewBias = gi.ViewBias;
+        ImGuiApi.Checkbox("Enable DDGI", ref enabled);
+        if (ImGuiApi.Checkbox("Show probes", ref show)) Program.Features.Set(PbrFeatures.GiProbes.Id, show);
+        ImGuiApi.SliderFloat("Probe radius (m)", ref radius, 0.01f, 0.5f);
+        if (gi.Volume is null)
+        {
+            ImGuiApi.SliderFloat("Probe spacing (m; 0 = auto)", ref spacing, 0, 5);
+            ImGuiApi.SliderInt("Probe budget", ref budget, 8, 8192);
+        }
+        else ImGuiText.Disabled("Authored volume: density is set by Volume spacing/counts.");
+        ImGuiApi.SliderInt("Rays per probe", ref rays, 8, 256);
+        ImGuiApi.SliderInt("Probes per frame (0 = all)", ref updates, 0, budget);
+        ImGuiApi.SliderFloat("Hysteresis", ref hysteresis, 0, 0.999f);
+        ImGuiApi.SliderFloat("GI intensity", ref intensity, 0, 4);
+        ImGuiApi.SliderFloat("Normal bias", ref normalBias, 0, 1);
+        ImGuiApi.SliderFloat("View bias", ref viewBias, 0, 1);
+        debug.ProbeRadius = radius;
+        feature.Settings = gi with
+        {
+            Enabled = enabled, ProbeSpacing = spacing,
+            RaysPerProbe = rays, MaxProbes = budget, ProbesPerFrame = updates,
+            Hysteresis = hysteresis, Intensity = intensity, NormalBias = normalBias, ViewBias = viewBias,
+        };
+        ImGuiText.Show($"Active probes: {feature.ProbeCount}; green = active, red = inactive");
+        if (feature.ActiveVolume is { } volume)
+            ImGuiText.Show($"Grid: {volume.CountX} x {volume.CountY} x {volume.CountZ}; spacing: {volume.Spacing.X:F2} m");
     }
 
     private static string? PassOwner(string pass) => pass.Split('.')[0] switch

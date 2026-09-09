@@ -95,7 +95,7 @@ internal sealed class PbrViewerScene : IDisposable
         }
 
         _scene.RayTracedAo = new PbrRayTracedAo { Enabled = RayTracedAo, RaysPerPixel = 8, MaxDistance = 2f };
-        _scene.Gi = new PbrGi { Enabled = ProbeGi };
+        _pbr.Pipeline.Find<ProbeGiFeature>()!.Settings = new PbrGi { Enabled = ProbeGi };
         _scene.Ssr = new PbrScreenSpaceReflection { Enabled = Reflections };
         _scene.Lights.Add(new PbrLight
         {

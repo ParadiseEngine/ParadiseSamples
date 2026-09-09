@@ -72,3 +72,15 @@ After 60 warm-up frames, `--bench` reports average iteration time, process resid
 and managed memory every 300 frames. Add `--no-profile` to compare without synchronous GPU
 timing readback; those iteration times measure CPU submission, not completed GPU frames.
 Omit `--headless 6000` for an interactive run with the same reporting.
+
+`ProbeGiFeature.Settings` owns GI tuning; `ProbeGiDebugFeature` owns marker size and
+the `rendering.debug.giProbes` visibility switch. Expand **DDGI** for live probe visibility, spacing, ray count, update budget, hysteresis,
+intensity and lookup biases. Green markers are active; red markers are inactive. Markers
+respect scene depth and show relocated positions. Spacing is a minimum: the probe budget
+can force a wider grid. An authored volume uses its own spacing and counts.
+
+To run against an engine checkout containing these controls before updating the submodule:
+
+```sh
+dotnet run --project src/Paradise.Rendering.Sample -p:ParadiseEngineRoot=/absolute/path/to/ParadiseEngine -- --showcase --config engine.toml
+```

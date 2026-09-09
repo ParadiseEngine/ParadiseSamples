@@ -8,15 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../engine/src/Paradise.BT/Paradise.BT.csproj" />
-    <ProjectReference Include="../../engine/src/Paradise.BT.Builder/Paradise.BT.Builder.csproj" />
-    <ProjectReference Include="../../engine/src/Paradise.BT.Nodes/Paradise.BT.Nodes.csproj" />
+    <PackageReference Include="Paradise.BT" />
+    <PackageReference Include="Paradise.BT.Builder" />
+    <PackageReference Include="Paradise.BT.Nodes" />
 
-    <!-- Both generators are required to bind BT blackboards to ECS queryables. -->
-    <ProjectReference Include="../../engine/src/Paradise.ECS/Paradise.ECS.csproj" />
-    <ProjectReference Include="../../engine/src/Paradise.ECS.Generators/Paradise.ECS.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    <!-- Analyzers do not flow through project references; local nodes need this generator. -->
-    <ProjectReference Include="../../engine/src/Paradise.BT.Generators/Paradise.BT.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <!-- Runtime packages include their source generators. -->
+    <PackageReference Include="Paradise.ECS" />
   </ItemGroup>
 
 </Project>

@@ -11,10 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../engine/src/Paradise.Ui.ImGui/Paradise.Ui.ImGui.csproj" />
-    <ProjectReference Include="../../engine/src/Paradise.Rendering.WebGPU/Paradise.Rendering.WebGPU.csproj" />
+    <PackageReference Include="Paradise.Ui.ImGui" />
+    <PackageReference Include="Paradise.Rendering.WebGPU" />
     <!-- Forward the window backend's WindowEvent stream through IWindow. -->
-    <ProjectReference Include="../../engine/src/Paradise.Windowing.Sdl/Paradise.Windowing.Sdl.csproj" />
+    <PackageReference Include="Paradise.Windowing.Sdl" />
   </ItemGroup>
 
   <ItemGroup>

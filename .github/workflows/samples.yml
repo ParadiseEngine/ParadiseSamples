@@ -3,6 +3,7 @@ name: Build, deploy and release samples
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
   workflow_dispatch:
 
@@ -18,8 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
@@ -27,11 +26,18 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+      - name: Verify release version
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          version=$(dotnet msbuild src/Paradise.BT.Sample -getProperty:ParadiseVersion -nologo)
+          test "$RELEASE_TAG" = "v$version" || { echo "Tag must match engine version v$version"; exit 1; }
       - run: dotnet workload install wasm-tools
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages/_slang
-          key: slang-${{ runner.os }}-${{ hashFiles('engine/tools/slang/slang.manifest.json') }}
+          key: slang-${{ runner.os }}-${{ hashFiles('Directory.Build.props', 'Directory.Packages.props') }}
       - run: npm ci
       - run: npm test
       - run: dotnet build ParadiseSamples.slnx -c Release
@@ -55,7 +61,7 @@ jobs:
           if-no-files-found: error
 
   deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest
     environment:
@@ -85,7 +91,7 @@ jobs:
         run: curl --fail --retry 5 --retry-delay 5 https://paradiseengine.dev/samples/ | grep -q 'Small scenes'
 
   release:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: deploy
     runs-on: ubuntu-latest
     permissions:
@@ -101,7 +107,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: samples-${{ github.run_number }}
+          RELEASE_TAG: ${{ github.ref_name }}
           RELEASE_COMMIT: ${{ github.sha }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
@@ -118,7 +124,7 @@ jobs:
             gh release upload "$RELEASE_TAG" sample-site.tar.gz --clobber
           else
             gh release create "$RELEASE_TAG" sample-site.tar.gz \
-              --target "$RELEASE_COMMIT" \
-              --title "Samples ${RELEASE_TAG#samples-}" \
+              --verify-tag \
+              --title "Samples $RELEASE_TAG" \
               --notes-file release-notes.md
           fi

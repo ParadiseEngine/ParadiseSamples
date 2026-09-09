@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <ParadiseEngineRoot Condition="'$(ParadiseEngineRoot)' == ''">$(MSBuildThisFileDirectory)../../engine</ParadiseEngineRoot>
     <TargetFramework>net10.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
@@ -10,15 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(ParadiseEngineRoot)/src/Paradise.Ui.ImGui/Paradise.Ui.ImGui.csproj" />
-    <ProjectReference Include="$(ParadiseEngineRoot)/src/Paradise.Windowing.Sdl/Paradise.Windowing.Sdl.csproj" />
+    <PackageReference Include="Paradise.Ui.ImGui" />
+    <PackageReference Include="Paradise.Windowing.Sdl" />
     <!-- The sample supplies a diagnostic sink for renderer and device errors. -->
-    <ProjectReference Include="$(ParadiseEngineRoot)/src/Paradise.Diagnostics/Paradise.Diagnostics.csproj" />
-    <ProjectReference Include="$(ParadiseEngineRoot)/src/Paradise.Rendering/Paradise.Rendering.csproj" />
-    <ProjectReference Include="$(ParadiseEngineRoot)/src/Paradise.Windowing/Paradise.Windowing.csproj" />
-    <ProjectReference Include="$(ParadiseEngineRoot)/src/Paradise.Rendering.WebGPU/Paradise.Rendering.WebGPU.csproj" />
-    <ProjectReference Include="$(ParadiseEngineRoot)/src/Paradise.Rendering.Pbr/Paradise.Rendering.Pbr.csproj" />
-    <ProjectReference Include="$(ParadiseEngineRoot)/src/Paradise.Features.Toml/Paradise.Features.Toml.csproj" />
+    <PackageReference Include="Paradise.Diagnostics" />
+    <PackageReference Include="Paradise.Rendering" />
+    <PackageReference Include="Paradise.Windowing" />
+    <PackageReference Include="Paradise.Rendering.WebGPU" />
+    <PackageReference Include="Paradise.Rendering.Pbr" />
+    <PackageReference Include="Paradise.Features.Toml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,14 +26,10 @@
     <PackageReference Include="Zio" />
   </ItemGroup>
 
-  <Import Project="$(ParadiseEngineRoot)/src/Slang.targets" />
-
   <ItemGroup>
     <SlangShader Include="Shaders/**/*.slang" />
     <SlangShader Include="../Shared/Shaders/showcaseGlass.slang" />
     <Compile Include="../Shared/*.cs" Link="Shared/%(Filename)%(Extension)" />
-    <SlangIncludeDir Include="$(ParadiseEngineRoot)/src/Paradise.Rendering.Pbr/Shaders/" />
-    <SlangShaderInclude Include="$(ParadiseEngineRoot)/src/Paradise.Rendering.Pbr/Shaders/Common/**/*.slang" />
   </ItemGroup>
 
 </Project>

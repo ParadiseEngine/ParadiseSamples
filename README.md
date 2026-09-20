@@ -2,9 +2,9 @@
 
 Interactive browser demos: **[paradiseengine.dev/samples](https://paradiseengine.dev/samples/)**.
 
-This repository owns the engine's five example applications. All engine dependencies use published NuGet packages at the single
+This repository owns the engine's desktop and browser examples plus an Android bring-up sample. All engine dependencies use published NuGet packages at the single
 `ParadiseVersion` in `Directory.Build.props`. Runtime packages include their source generators;
-the PBR package supplies shader includes and Slang build tooling. No engine checkout is required.
+the PBR package supplies shader includes and Slang build tooling. No engine checkout is required for the desktop/browser examples; Android packaging currently uses the matching engine's native build tools.
 
 ```sh
 git clone https://github.com/ParadiseEngine/ParadiseSamples.git
@@ -22,6 +22,15 @@ Browser controls replace the native ImGui overlay: orbit/zoom, feature switches,
 settings, focus and exposure. The embedded `engine.toml` supplies the same starting preset.
 Browser statistics report CPU submission time and pass names; native GPU timing readback is not
 exposed by the browser backend.
+
+## Android bring-up
+
+The [Android NativeAOT smoke sample](src/Paradise.Rendering.Android.Sample/README.md) has its own
+`ParadiseSamples.Android.slnx` and requires a matching engine prerelease feed and Android Dawn artifact.
+It publishes a `linux-bionic-arm64` shared library loaded by SDL's Java launcher, without Mono or a
+.NET Android workload. The engine's `tools/android/build_nativeaot.py` packages and validates the APK.
+It is not part of the regular five-sample build, and does not replace the required browser WebGPU path.
+Device rendering, suspend/resume and full scene/UI qualification remain open.
 
 ## Build the website
 

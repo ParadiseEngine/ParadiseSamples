@@ -73,3 +73,7 @@ Look for `Android NativeAOT entry point reached; dynamic code is disabled`, then
 ## Still unqualified
 
 Native startup on real hardware, suspend/resume, drawable replacement, safe areas/orientation, soft keyboard, device loss, PBR/cooked assets/texture transcoding, UI/audio middleware and real-browser scene parity remain in engine #323. Android NativeAOT is experimental upstream. Successful compilation, package inspection and host unit tests must not be presented as completed mobile runtime qualification.
+
+## Activity theme
+
+The launcher explicitly uses `@android:style/Theme.Material.NoActionBar`. This removes Android's Activity title/banner before SDL creates the view. It is separate from immersive system bars, which remain controlled by the engine fullscreen default and `WindowOptions.Fullscreen`. The engine APK recipe rejects missing or title-producing launcher themes.

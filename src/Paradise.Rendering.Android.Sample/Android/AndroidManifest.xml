@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.paradiseengine.androidsmoke" android:versionCode="3" android:versionName="0.3-nativeaot-no-title">
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="36" />
+  <uses-feature android:name="android.hardware.vulkan.version" android:version="4194304" android:required="true" />
+  <!-- SDL's getMainSharedObject resolves nativeLibraryDir; extract the libraries there. -->
+  <application android:allowBackup="false" android:label="Paradise Android NativeAOT"
+      android:supportsRtl="true" android:extractNativeLibs="true" android:hasCode="true">
+    <!-- Immersive system bars do not remove a theme-provided Activity title bar. -->
+    <activity android:theme="@android:style/Theme.Material.NoActionBar" android:name=".MainActivity" android:exported="true"
+        android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard|uiMode|density">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>

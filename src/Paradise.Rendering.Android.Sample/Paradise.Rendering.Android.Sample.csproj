@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyName>paradise_android</AssemblyName>
+    <RootNamespace>Paradise.Rendering.Android.Sample</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <RuntimeIdentifier>linux-bionic-arm64</RuntimeIdentifier>
+    <PublishAot>true</PublishAot>
+    <NativeLib>Shared</NativeLib>
+    <!-- The .NET runtime's documented Android NDK route; no Mono/Java.Interop host. -->
+    <PublishAotUsingRuntimePack>true</PublishAotUsingRuntimePack>
+    <DisableUnsupportedError>true</DisableUnsupportedError>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <IlcTreatWarningsAsErrors>true</IlcTreatWarningsAsErrors>
+    <StripSymbols Condition="'$(Configuration)' == 'Release'">true</StripSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Paradise.Hosting.Android" />
+    <PackageReference Include="Paradise.Windowing.Sdl" />
+    <PackageReference Include="Paradise.Windowing" />
+    <PackageReference Include="Paradise.Rendering" />
+    <PackageReference Include="Paradise.Rendering.WebGPU" />
+    <!-- Only managed bindings. The APK builder selects pinned Android native payloads. -->
+    <PackageReference Include="WebGPUSharp" ExcludeAssets="native" />
+    <PackageReference Include="ppy.SDL3-CS" ExcludeAssets="native" />
+    <LinkerArg Include="-Wl,-z,max-page-size=16384" />
+    <LinkerArg Include="-Wl,-z,common-page-size=16384" />
+    <LinkerArg Include="-Wl,-soname,libparadise_android.so" />
+  </ItemGroup>
+  <Target Name="ValidateAndroidNativeAot" BeforeTargets="PrepareForBuild" Condition="'$(DesignTimeBuild)' != 'true'">
+    <Error Condition="'$(RuntimeIdentifier)' != 'linux-bionic-arm64'" Text="This Android NativeAOT sample requires linux-bionic-arm64; desktop Linux and Android Mono RIDs are not substitutes." />
+    <Error Condition="'$(PublishAot)' != 'true' Or '$(NativeLib)' != 'Shared' Or '$(UseMonoRuntime)' == 'true'"
+           Text="This sample must publish a NativeAOT shared library, without a Mono fallback." />
+  </Target>
+</Project>

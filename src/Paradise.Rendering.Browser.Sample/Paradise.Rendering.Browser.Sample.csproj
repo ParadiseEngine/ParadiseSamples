@@ -16,6 +16,8 @@
     <PackageReference Include="Paradise.Rendering" />
     <PackageReference Include="Paradise.Rendering.Browser" />
     <PackageReference Include="Paradise.Rendering.Pbr" />
+    <!-- The shared GI scene previews a source GLB; Paradise.Rendering.Pbr no longer brings the reader in. -->
+    <PackageReference Include="Paradise.Assets.Gltf" />
     <PackageReference Include="Paradise.Features.Toml" />
   </ItemGroup>
 

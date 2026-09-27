@@ -97,7 +97,7 @@ internal sealed class GiDemoScene : IDisposable
         var blue = _pbr.Materials.AddDefaultMaterial(new Vector4(0.2f, 0.35f, 0.9f, 1f), metallic: 0f, roughness: 0.6f);
         // Panel dominant, sun as a secondary key: the Cornell reference look is a room lit by its
         // own emitter, not a floor flooded by daylight.
-        var panel = _pbr.Materials.AddMaterial(Emissive(PanelOnly ? new Vector3(12f, 11.2f, 10f) : new Vector3(8f, 7.5f, 6.7f)), []);
+        var panel = _pbr.Materials.AddMaterial(Emissive(PanelOnly ? new Vector3(12f, 11.2f, 10f) : new Vector3(8f, 7.5f, 6.7f)));
 
         PbrMesh Box(int material) => new([_pbr.UploadPrimitive(cube, cubeIndices, material)]);
         var whiteBox = Box(white);
@@ -197,33 +197,27 @@ internal sealed class GiDemoScene : IDisposable
 
     private void Add(PbrMesh mesh, Matrix4x4 model) => _scene.Instances.Add(new PbrInstance { Mesh = mesh, Model = model });
 
-    private static GltfMaterialData Emissive(Vector3 color) => new(
-        Name: "panel", BaseColorFactor: new Vector4(1f, 1f, 1f, 1f), MetallicFactor: 0f, RoughnessFactor: 1f,
-        EmissiveFactor: color, NormalScale: 1f, OcclusionStrength: 1f, TransmissionFactor: 0f,
-        AlphaMode: GltfAlphaMode.Opaque, AlphaCutoff: 0.5f, DoubleSided: false,
-        BaseColorImage: -1, MetallicRoughnessImage: -1, NormalImage: -1, OcclusionImage: -1, EmissiveImage: -1,
-        BaseColorUvTransform: GltfUvTransform.Identity);
+    private static PbrMaterialDesc Emissive(Vector3 color) => new() { Name = "panel", RoughnessFactor = 1f, EmissiveFactor = color };
 
     /// <summary>Load a GLB's geometry, drop its texture references (factors only), and stand it on
     /// <paramref name="top"/> scaled to <paramref name="size"/> metres.</summary>
     private void PlaceModel(string path, Vector3 top, float size)
     {
         var asset = GltfSceneReader.ReadGeometry(File.ReadAllBytes(path));
-        var materials = new GltfMaterialData[asset.Materials.Length];
-        for (var i = 0; i < materials.Length; i++)
+        var materialIds = new int[asset.Materials.Length];
+        for (var i = 0; i < materialIds.Length; i++)
         {
-            materials[i] = asset.Materials[i] with
+            materialIds[i] = _pbr.Materials.AddMaterial(GltfPreview.Describe(asset.Materials[i]) with
             {
-                BaseColorImage = -1, MetallicRoughnessImage = -1, NormalImage = -1, OcclusionImage = -1, EmissiveImage = -1,
                 // Polished gold: a metal has no diffuse, so everything it shows is the room
                 // reflected through the probes' specular fallback — the red and green walls and
                 // the panel, blurred to the probes' resolution.
                 BaseColorFactor = new Vector4(1.0f, 0.78f, 0.36f, 1f),
                 MetallicFactor = 1f,
                 RoughnessFactor = 0.25f,
-            };
+            });
         }
-        var meshes = _pbr.UploadMesh(asset with { Materials = materials, Images = [] });
+        var meshes = GltfPreview.UploadMeshes(_pbr, asset, materialIds);
 
         var min = new Vector3(float.MaxValue);
         var max = new Vector3(float.MinValue);

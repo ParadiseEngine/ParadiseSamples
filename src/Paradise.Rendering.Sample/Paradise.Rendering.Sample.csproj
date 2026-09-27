@@ -17,6 +17,8 @@
     <PackageReference Include="Paradise.Windowing" />
     <PackageReference Include="Paradise.Rendering.WebGPU" />
     <PackageReference Include="Paradise.Rendering.Pbr" />
+    <!-- The viewer and GI scene preview source GLBs; Paradise.Rendering.Pbr no longer brings the reader in. -->
+    <PackageReference Include="Paradise.Assets.Gltf" />
     <PackageReference Include="Paradise.Features.Toml" />
   </ItemGroup>
 

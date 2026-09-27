@@ -55,8 +55,8 @@ Sample versions match engine versions. To release a new version:
    ```sh
    git switch main
    git pull --ff-only
-   git tag v0.46.0
-   git push origin v0.46.0
+   git tag v0.55.0
+   git push origin v0.55.0
    ```
 
 [Build, deploy and release samples](.github/workflows/samples.yml) verifies that the tag matches

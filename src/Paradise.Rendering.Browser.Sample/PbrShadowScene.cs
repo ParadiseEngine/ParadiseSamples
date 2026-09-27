@@ -3,7 +3,6 @@ using System.Numerics;
 
 using Microsoft.Extensions.Logging;
 
-using Paradise.Assets.Gltf;
 using Paradise.Diagnostics;
 using Paradise.Features;
 using Paradise.Rendering.Pbr;
@@ -58,8 +57,8 @@ internal sealed class PbrShadowScene : IDisposable
         AddBox(vertices, indices, emissive, new Vector3(0.1f, 0.75f, 1.1f), 0.5f, 0.9f);
         // One translucent box so the frame also builds an AlphaBlend pipeline and takes the
         // back-to-front blended bucket. AddDefaultMaterial always produces an opaque material, so
-        // the blend intent has to come from a hand-built glTF material record.
-        AddBox(vertices, indices, _pbr.Materials.AddMaterial(TranslucentMaterial(), []),
+        // the blend intent has to come from a hand-built material description.
+        AddBox(vertices, indices, _pbr.Materials.AddMaterial(TranslucentMaterial()),
             new Vector3(-0.4f, 0.35f, 1.9f), 0.9f, -0.2f);
 
         var palette = new[] { matte, metal, emissive, groundMaterial };
@@ -105,24 +104,13 @@ internal sealed class PbrShadowScene : IDisposable
         _scene.Ambient = new PbrAmbient { Sky = new Vector3(0.10f, 0.12f, 0.16f), Equator = new Vector3(0.07f, 0.07f, 0.08f), Ground = new Vector3(0.03f, 0.03f, 0.03f) };
     }
 
-    private static GltfMaterialData TranslucentMaterial() => new(
-        Name: "translucent",
-        BaseColorFactor: new Vector4(0.35f, 0.85f, 0.7f, 0.35f),
-        MetallicFactor: 0f,
-        RoughnessFactor: 0.25f,
-        EmissiveFactor: Vector3.Zero,
-        NormalScale: 1f,
-        OcclusionStrength: 1f,
-        TransmissionFactor: 0f,
-        AlphaMode: GltfAlphaMode.Blend,
-        AlphaCutoff: 0.5f,
-        DoubleSided: false,
-        BaseColorImage: -1,
-        MetallicRoughnessImage: -1,
-        NormalImage: -1,
-        OcclusionImage: -1,
-        EmissiveImage: -1,
-        BaseColorUvTransform: GltfUvTransform.Identity);
+    private static PbrMaterialDesc TranslucentMaterial() => new()
+    {
+        Name = "translucent",
+        BaseColorFactor = new Vector4(0.35f, 0.85f, 0.7f, 0.35f),
+        RoughnessFactor = 0.25f,
+        AlphaMode = PbrAlphaMode.Blend,
+    };
 
     private void AddBox(float[] vertices, uint[] indices, int materialId, Vector3 position, float scale, float rotation)
     {

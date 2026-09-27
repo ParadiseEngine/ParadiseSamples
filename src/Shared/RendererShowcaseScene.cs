@@ -1,6 +1,5 @@
 using System.Numerics;
 using Microsoft.Extensions.Logging;
-using Paradise.Assets.Gltf;
 using Paradise.Features;
 using Paradise.Rendering.Pbr;
 
@@ -57,10 +56,12 @@ internal sealed class RendererShowcaseScene : IDisposable
         Add(Cube(new Vector4(0.6f, 0.65f, 0.7f, 1), 0.85f, 0.12f), new Vector3(2.4f, 0.04f, 2), new Vector3(1.3f, 0.03f, 1.5f));
         var glassProgram = Renderer.RegisterMaterialProgram(
             ShaderProgramLoader.Load(typeof(RendererShowcaseScene).Assembly, "Shaders.showcaseGlass"));
-        var glass = new GltfMaterialData("Glass", new Vector4(0.3f, 0.8f, 0.9f, 0.35f), 0, 0.12f,
-            Vector3.Zero, 1, 1, 0, GltfAlphaMode.Blend, 0.5f, true,
-            -1, -1, -1, -1, -1, GltfUvTransform.Identity);
-        var glassMaterial = Renderer.Materials.AddMaterial(in glass, [], glassProgram, [],
+        var glass = new PbrMaterialDesc
+        {
+            Name = "Glass", BaseColorFactor = new Vector4(0.3f, 0.8f, 0.9f, 0.35f), RoughnessFactor = 0.12f,
+            AlphaMode = PbrAlphaMode.Blend,
+        };
+        var glassMaterial = Renderer.Materials.AddMaterial(in glass, default, glassProgram, [],
             [new MaterialTarget(7, PbrTargets.SceneColor)]);
         Add(new PbrMesh([Renderer.UploadPrimitive(vertices, indices, glassMaterial)]),
             new Vector3(1.1f, 1.7f, 0.04f), new Vector3(-1.6f, 0.9f, 2.1f));

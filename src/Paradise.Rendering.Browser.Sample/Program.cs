@@ -77,7 +77,7 @@ public static partial class Program
 
             s_renderer = await BrowserRenderer.CreateAsync("#gpu-canvas", (uint)width, (uint)height).ConfigureAwait(false);
             Console.WriteLine($"[sample] adapter: {s_renderer.AdapterInfo}");
-            Console.WriteLine($"[sample] color format {s_renderer.ColorFormat}, uniform alignment {s_renderer.UniformBufferOffsetAlignment}, BC compression {s_renderer.SupportsBcTextureCompression}");
+            Console.WriteLine($"[sample] color format {s_renderer.ColorFormat}, uniform alignment {s_renderer.UniformBufferOffsetAlignment}, texture compression {s_renderer.SupportedTextureCompression}");
 
             switch (s_sceneName)
             {

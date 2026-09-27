@@ -57,7 +57,13 @@ internal sealed class PbrViewerScene : IDisposable
             using var sidecars = new SubFileSystem(physical, glbFile.GetDirectory(), owned: false);
             var asset = GltfSceneReader.Read(
                 physical.ReadAllBytes(glbFile), uri => ReadSidecarImage(sidecars, uri));
-            var meshes = _pbr.UploadMesh(asset);
+            var materialIds = new int[asset.Materials.Length];
+            for (var i = 0; i < materialIds.Length; i++)
+            {
+                materialIds[i] = _pbr.Materials.AddMaterial(
+                    GltfPreview.Describe(asset.Materials[i]), GltfPreview.Textures(asset.Materials[i], asset.Images));
+            }
+            var meshes = GltfPreview.UploadMeshes(_pbr, asset, materialIds);
             if (asset.Instances.Length == 0)
                 throw new InvalidOperationException($"'{glbPath}' has no mesh instances in its default scene.");
             foreach (var instance in asset.Instances)

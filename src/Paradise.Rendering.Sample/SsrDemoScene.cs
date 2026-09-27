@@ -1,7 +1,6 @@
 using System;
 using System.Numerics;
 using Microsoft.Extensions.Logging;
-using Paradise.Assets.Gltf;
 using Paradise.Rendering.Pbr;
 using Paradise.Rendering.WebGPU;
 
@@ -47,7 +46,7 @@ internal sealed class SsrDemoScene : IDisposable
         var blue = _pbr.Materials.AddDefaultMaterial(new Vector4(0.15f, 0.3f, 0.9f, 1f), metallic: 0f, roughness: 0.6f);
         var white = _pbr.Materials.AddDefaultMaterial(new Vector4(0.85f, 0.85f, 0.85f, 1f), metallic: 0f, roughness: 0.8f);
         var gold = _pbr.Materials.AddDefaultMaterial(new Vector4(1f, 0.78f, 0.36f, 1f), metallic: 1f, roughness: 0.2f);
-        var glow = _pbr.Materials.AddMaterial(Emissive(new Vector3(6f, 4.5f, 2.5f)), []);
+        var glow = _pbr.Materials.AddMaterial(Emissive(new Vector3(6f, 4.5f, 2.5f)));
 
         PbrMesh Box(int material) => new([_pbr.UploadPrimitive(cube, cubeIndices, material)]);
 
@@ -109,12 +108,7 @@ internal sealed class SsrDemoScene : IDisposable
 
     private void Add(PbrMesh mesh, Matrix4x4 model) => _scene.Instances.Add(new PbrInstance { Mesh = mesh, Model = model });
 
-    private static GltfMaterialData Emissive(Vector3 color) => new(
-        Name: "glow", BaseColorFactor: new Vector4(1f, 1f, 1f, 1f), MetallicFactor: 0f, RoughnessFactor: 1f,
-        EmissiveFactor: color, NormalScale: 1f, OcclusionStrength: 1f, TransmissionFactor: 0f,
-        AlphaMode: GltfAlphaMode.Opaque, AlphaCutoff: 0.5f, DoubleSided: false,
-        BaseColorImage: -1, MetallicRoughnessImage: -1, NormalImage: -1, OcclusionImage: -1, EmissiveImage: -1,
-        BaseColorUvTransform: GltfUvTransform.Identity);
+    private static PbrMaterialDesc Emissive(Vector3 color) => new() { Name = "glow", RoughnessFactor = 1f, EmissiveFactor = color };
 
     public void Resize(uint width, uint height)
     {

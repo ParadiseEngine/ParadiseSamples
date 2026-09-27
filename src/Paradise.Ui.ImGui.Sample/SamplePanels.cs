@@ -23,7 +23,7 @@ internal sealed class SamplePanels
         ImGuiApi.SetNextWindowPos(new Vector2(24, 24), ImGuiCond.FirstUseEver);
         ImGuiApi.Begin("Paradise.Ui.ImGui", ImGuiWindowFlags.AlwaysAutoResize);
 
-        ImGuiText.Show($"Dear ImGui {ImGuiApi.GetVersionS()} via Hexa.NET.ImGui");
+        ImGuiText.Show($"Dear ImGui {ImGuiApi.GetVersionS()} via Paradise.ImGui");
         ImGuiText.Disabled(_fontDescription);
         ImGuiApi.Separator();
 

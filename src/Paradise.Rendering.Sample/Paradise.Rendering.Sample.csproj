@@ -20,6 +20,8 @@
     <!-- The viewer and GI scene preview source GLBs; Paradise.Rendering.Pbr no longer brings the reader in. -->
     <PackageReference Include="Paradise.Assets.Gltf" />
     <PackageReference Include="Paradise.Features.Toml" />
+    <!-- Drives the animation mixer demo's mannequins. -->
+    <PackageReference Include="Paradise.Animation" />
   </ItemGroup>
 
   <ItemGroup>

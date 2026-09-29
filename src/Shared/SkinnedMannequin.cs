@@ -34,6 +34,21 @@ internal sealed class SkinnedMannequin
 
     private static readonly int[] s_parent = [-1, 0, 1, 1, 3, 1, 5, 0, 7, 0, 9];
 
+    private static readonly string[] s_names =
+    [
+        "hips", "chest", "head",
+        "left_upper_arm", "left_forearm", "right_upper_arm", "right_forearm",
+        "left_thigh", "left_shin", "right_thigh", "right_shin",
+    ];
+
+    /// <summary>Bind-pose joint positions in model space, parents and names in joint order — depth first,
+    /// parents before children — for a host that poses the rig with its own animation runtime.</summary>
+    internal static ReadOnlySpan<Vector3> BindPositions => s_bind;
+
+    internal static ReadOnlySpan<int> Parents => s_parent;
+
+    internal static ReadOnlySpan<string> JointNames => s_names;
+
     private readonly Matrix4x4[] _world = new Matrix4x4[JointCount];
 
     public float[] Vertices { get; }

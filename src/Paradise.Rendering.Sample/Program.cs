@@ -65,6 +65,15 @@ internal static class Program
                 return 1;
             }
         }
+        if (Array.IndexOf(args, "--animation-mixer") >= 0)
+        {
+            try { return AnimationMixerDemo.Run(args, s_log); }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Animation mixer failed: {ex}");
+                return 1;
+            }
+        }
         var headlessFrames = ParseHeadless(args);
         var screenshotPath = ParseValue(args, "--screenshot");
         s_bench = Array.IndexOf(args, "--bench") >= 0;

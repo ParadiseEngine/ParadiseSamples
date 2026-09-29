@@ -79,4 +79,30 @@ intensity and lookup biases. Green markers are active; red markers are inactive.
 respect scene depth and show relocated positions. Spacing is a minimum: the probe budget
 can force a wider grid. An authored volume uses its own spacing and counts.
 
+## Animation mixer
+
+```sh
+dotnet run --project src/Paradise.Rendering.Sample -- --animation-mixer
+```
+
+Four procedural mannequins, each driven by its own `Paradise.Animation` `AnimationPlayer`, with clips
+keyed from formulas at startup so no rigged asset is needed:
+
+1. **Synchronized mix** — idle, walk and run play at once at independent weights in one sync group,
+   so their steps stay aligned while the weights move. Untick **Animate weights** and drag the sliders.
+2. **Interrupted cross-fades** — a new `Play` every 0.3 s with 0.6 s fades, so fades are always
+   interrupted; each continues from the pose it reached and outgoing playbacks are removed within one
+   fade. The list shows every contributing playback's weight. The buttons cross-fade by hand.
+3. **Upper-body override** — a wave on an override layer masked to the chest and everything below it,
+   over the walk. Its layer weight moves between 0 and 1.
+4. **Additive lean** — a sideways sway built as an additive clip against the rest pose, applied over
+   the run at the strength its layer weight sets.
+
+For a repeatable headless check (fixed 60 Hz steps, a status line every 60 frames, the largest
+per-frame joint move per character, and a screenshot):
+
+```sh
+dotnet run --project src/Paradise.Rendering.Sample -- --animation-mixer --headless 210 --screenshot /tmp/animation-mixer.png
+```
+
 The sample uses the published engine version in `Directory.Build.props`.

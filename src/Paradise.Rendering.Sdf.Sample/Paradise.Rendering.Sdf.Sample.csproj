@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <PublishAot>true</PublishAot>
+    <RootNamespace>Paradise.Rendering.Sdf.Sample</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Paradise.Rendering" />
+    <PackageReference Include="Paradise.Rendering.Sdf" />
+    <PackageReference Include="Paradise.Rendering.WebGPU" />
+    <PackageReference Include="Paradise.Windowing" />
+    <PackageReference Include="Paradise.Windowing.Sdl" />
+  </ItemGroup>
+
+</Project>

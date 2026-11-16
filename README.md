@@ -2,7 +2,7 @@
 
 Interactive browser demos: **[paradiseengine.dev/samples](https://paradiseengine.dev/samples/)**.
 
-This repository owns the engine's five example applications. All engine dependencies use published NuGet packages at the single
+This repository owns the engine's example applications. All engine dependencies use published NuGet packages at the single
 `ParadiseVersion` in `Directory.Build.props`. Runtime packages include their source generators;
 the PBR package supplies shader includes and Slang build tooling. No engine checkout is required.
 
@@ -17,6 +17,10 @@ dotnet run --project src/Paradise.Rendering.Sample -- --showcase --config engine
 Use .NET SDK 10.0.400 or later (see `global.json`). The native renderer and ImGui samples need a
 desktop graphics environment. The BT and ECS samples are console applications. The browser sample
 provides the full renderer showcase plus lit cube, PBR/shadows and GPU compute scenes.
+`Paradise.Rendering.Sdf.Sample` is a native window onto the signed-distance-field renderer; see its
+[README](src/Paradise.Rendering.Sdf.Sample/README.md). It needs a `ParadiseVersion` that ships
+`Paradise.Rendering.Sdf` (any release after 0.63.0), so it stays out of the solution and CI until
+the version is raised.
 The showcase shares its scene, animation and glass shader with the native sample through `src/Shared`.
 Browser controls replace the native ImGui overlay: orbit/zoom, feature switches, pause, shadow
 settings, focus and exposure. The embedded `engine.toml` supplies the same starting preset.
@@ -49,7 +53,8 @@ Sample versions match engine versions. To release a new version:
 
 1. Publish the engine's NuGet packages first and wait for them to be available on nuget.org.
 2. Set `ParadiseVersion` in `Directory.Build.props` to that version, update sample code as needed,
-   and merge the validated changes into `main`.
+   and merge the validated changes into `main`. The first version that ships
+   `Paradise.Rendering.Sdf` also adds `src/Paradise.Rendering.Sdf.Sample` to `ParadiseSamples.slnx`.
 3. Push the matching tag in this repository, for example:
 
    ```sh

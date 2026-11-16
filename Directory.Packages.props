@@ -11,6 +11,7 @@
     <PackageVersion Include="Paradise.Rendering" Version="[$(ParadiseVersion)]" />
     <PackageVersion Include="Paradise.Rendering.Browser" Version="[$(ParadiseVersion)]" />
     <PackageVersion Include="Paradise.Rendering.Pbr" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.Rendering.Sdf" Version="[$(ParadiseVersion)]" />
     <PackageVersion Include="Paradise.Rendering.WebGPU" Version="[$(ParadiseVersion)]" />
     <PackageVersion Include="Paradise.Ui.ImGui" Version="[$(ParadiseVersion)]" />
     <PackageVersion Include="Paradise.Windowing" Version="[$(ParadiseVersion)]" />

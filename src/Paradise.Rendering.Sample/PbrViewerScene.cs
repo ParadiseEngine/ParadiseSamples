@@ -61,7 +61,7 @@ internal sealed class PbrViewerScene : IDisposable
             for (var i = 0; i < materialIds.Length; i++)
             {
                 materialIds[i] = _pbr.Materials.AddMaterial(
-                    GltfPreview.Describe(asset.Materials[i]), GltfPreview.Textures(asset.Materials[i], asset.Images));
+                    GltfPreview.Describe(asset, i), GltfPreview.Textures(asset.Materials[i], asset.Images));
             }
             var meshes = GltfPreview.UploadMeshes(_pbr, asset, materialIds);
             if (asset.Instances.Length == 0)

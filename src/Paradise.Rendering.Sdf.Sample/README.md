@@ -65,8 +65,6 @@ that outlasts the backend's readback wait fails. The wait is five seconds unless
 
 ## Package version
 
-`Paradise.Rendering.Sdf` is first published in the engine release after 0.63.0. Until
-`ParadiseVersion` reaches that release this project does not restore, so it is left out of
-`ParadiseSamples.slnx` and CI; add it to the solution in the same change that raises the version.
-The lighting features (global illumination, reflections, fog, spot lights, bloom and FXAA) need
-the release that includes ParadiseEngine#371.
+`Paradise.Rendering.Sdf` is first published in engine 0.64.0, which also carries the lighting
+features (global illumination, reflections, fog, spot lights, bloom and FXAA, ParadiseEngine#371).
+The project builds in `ParadiseSamples.slnx` and CI with the other samples.

@@ -12,7 +12,18 @@ namespace Paradise.Rendering.Sample;
 /// whole shared stream once per draw.</remarks>
 internal static class GltfPreview
 {
-    public static PbrMaterialDesc Describe(GltfMaterialData material) => new()
+    /// <summary>The engine description of material <paramref name="index"/> of <paramref name="asset"/>.</summary>
+    /// <remarks>glTF's <c>doubleSided</c> becomes back-face culling, except for a material a mirrored
+    /// node draws: winding is decided after the model transform, so culling would show that node's
+    /// inside. The engine's cook flips such triangles; this preview uploads them as they are
+    /// (ParadiseEngine#387).</remarks>
+    public static PbrMaterialDesc Describe(GltfAsset asset, int index)
+    {
+        var material = asset.Materials[index];
+        return Describe(material) with { DoubleSided = material.DoubleSided || DrawnMirrored(asset, index) };
+    }
+
+    private static PbrMaterialDesc Describe(GltfMaterialData material) => new()
     {
         Name = material.Name,
         BaseColorFactor = material.BaseColorFactor,
@@ -65,6 +76,19 @@ internal static class GltfPreview
             meshes[m] = new PbrMesh(primitives);
         }
         return meshes;
+    }
+
+    private static bool DrawnMirrored(GltfAsset asset, int materialIndex)
+    {
+        foreach (var instance in asset.Instances)
+        {
+            if (instance.WorldTransform.GetDeterminant() >= 0f) continue;
+            foreach (var primitive in asset.Meshes[instance.MeshIndex].Primitives)
+            {
+                if (primitive.MaterialIndex == materialIndex) return true;
+            }
+        }
+        return false;
     }
 
     private static ReadOnlyMemory<byte> Image(int index, GltfImageData[] images) =>

@@ -207,7 +207,7 @@ internal sealed class GiDemoScene : IDisposable
         var materialIds = new int[asset.Materials.Length];
         for (var i = 0; i < materialIds.Length; i++)
         {
-            materialIds[i] = _pbr.Materials.AddMaterial(GltfPreview.Describe(asset.Materials[i]) with
+            materialIds[i] = _pbr.Materials.AddMaterial(GltfPreview.Describe(asset, i) with
             {
                 // Polished gold: a metal has no diffuse, so everything it shows is the room
                 // reflected through the probes' specular fallback — the red and green walls and

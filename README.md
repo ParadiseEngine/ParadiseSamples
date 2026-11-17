@@ -18,9 +18,7 @@ Use .NET SDK 10.0.400 or later (see `global.json`). The native renderer and ImGu
 desktop graphics environment. The BT and ECS samples are console applications. The browser sample
 provides the full renderer showcase plus lit cube, PBR/shadows and GPU compute scenes.
 `Paradise.Rendering.Sdf.Sample` is a native window onto the signed-distance-field renderer; see its
-[README](src/Paradise.Rendering.Sdf.Sample/README.md). It needs a `ParadiseVersion` that ships
-`Paradise.Rendering.Sdf` (any release after 0.63.0), so it stays out of the solution and CI until
-the version is raised.
+[README](src/Paradise.Rendering.Sdf.Sample/README.md).
 The showcase shares its scene, animation and glass shader with the native sample through `src/Shared`.
 Browser controls replace the native ImGui overlay: orbit/zoom, feature switches, pause, shadow
 settings, focus and exposure. The embedded `engine.toml` supplies the same starting preset.
@@ -41,7 +39,7 @@ Links and runtime assets are relative so they work on Pages and beneath `/sample
 
 ## Deployment
 
-GitHub Actions builds all five samples, runs both console applications and a BT NativeAOT smoke
+GitHub Actions builds all six samples, runs both console applications and a BT NativeAOT smoke
 test, then publishes the browser application. Pull requests build without deployment credentials.
 Version tags deploy to the `paradise-samples` Cloudflare Pages project, followed by the
 `paradise-samples-route` Worker on `paradiseengine.dev`. It redirects `/` to `/samples/`,
@@ -53,8 +51,7 @@ Sample versions match engine versions. To release a new version:
 
 1. Publish the engine's NuGet packages first and wait for them to be available on nuget.org.
 2. Set `ParadiseVersion` in `Directory.Build.props` to that version, update sample code as needed,
-   and merge the validated changes into `main`. The first version that ships
-   `Paradise.Rendering.Sdf` also adds `src/Paradise.Rendering.Sdf.Sample` to `ParadiseSamples.slnx`.
+   and merge the validated changes into `main`.
 3. Push the matching tag in this repository, for example:
 
    ```sh

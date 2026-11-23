@@ -1,10 +1,10 @@
 <Project>
   <PropertyGroup>
-    <ParadiseVersion>0.64.0</ParadiseVersion>
+    <ParadiseVersion>0.66.0</ParadiseVersion>
     <Version>$(ParadiseVersion)</Version>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <LangVersion>14.0</LangVersion>
+    <LangVersion>15.0</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

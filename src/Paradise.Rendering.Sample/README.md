@@ -1,6 +1,6 @@
 # Renderer laboratory
 
-Run from the repository root (requires .NET 10 and a WebGPU-capable GPU):
+Run from the repository root (requires .NET 11 and a WebGPU-capable GPU):
 
 ```sh
 dotnet run --project src/Paradise.Rendering.Sample -- --showcase --config engine.toml

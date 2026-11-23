@@ -14,7 +14,7 @@ dotnet build ParadiseSamples.slnx -c Release
 dotnet run --project src/Paradise.Rendering.Sample -- --showcase --config engine.toml --bench
 ```
 
-Use .NET SDK 10.0.400 or later (see `global.json`). The native renderer and ImGui samples need a
+Use .NET SDK 11.0.100 or later (see `global.json`). The native renderer and ImGui samples need a
 desktop graphics environment. The BT and ECS samples are console applications. The browser sample
 provides the full renderer showcase plus lit cube, PBR/shadows and GPU compute scenes.
 `Paradise.Rendering.Sdf.Sample` is a native window onto the signed-distance-field renderer; see its

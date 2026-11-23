@@ -2,7 +2,7 @@
 
 A window onto `Paradise.Rendering.Sdf`: an animated scene that uses every primitive, operation
 and lighting feature, an orbit camera, and picking through the CPU field. Run from the repository root (requires
-.NET 10 and a WebGPU-capable GPU):
+.NET 11 and a WebGPU-capable GPU):
 
 ```sh
 dotnet run --project src/Paradise.Rendering.Sdf.Sample

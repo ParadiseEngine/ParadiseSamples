@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <ParadiseVersion>0.66.0</ParadiseVersion>
+    <ParadiseVersion>0.67.1</ParadiseVersion>
     <Version>$(ParadiseVersion)</Version>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>

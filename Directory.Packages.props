@@ -1,6 +1,7 @@
 <Project>
   <ItemGroup>
     <PackageVersion Include="Paradise.Assets.Gltf" Version="[$(ParadiseVersion)]" />
+    <PackageVersion Include="Paradise.Assets.Textures" Version="[$(ParadiseVersion)]" />
     <PackageVersion Include="Paradise.BT" Version="[$(ParadiseVersion)]" />
     <PackageVersion Include="Paradise.BT.Builder" Version="[$(ParadiseVersion)]" />
     <PackageVersion Include="Paradise.BT.Nodes" Version="[$(ParadiseVersion)]" />

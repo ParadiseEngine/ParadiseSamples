@@ -44,16 +44,6 @@ internal static class GltfPreview
             material.BaseColorUvTransform.Offset, material.BaseColorUvTransform.Scale, material.BaseColorUvTransform.Rotation),
     };
 
-    /// <summary>The material's KTX2 images; a slot without an image takes the default texture.</summary>
-    public static PbrMaterialTextures Textures(GltfMaterialData material, GltfImageData[] images) => new()
-    {
-        BaseColor = Image(material.BaseColorImage, images),
-        MetallicRoughness = Image(material.MetallicRoughnessImage, images),
-        Normal = Image(material.NormalImage, images),
-        Occlusion = Image(material.OcclusionImage, images),
-        Emissive = Image(material.EmissiveImage, images),
-    };
-
     /// <summary>Uploads every mesh of <paramref name="asset"/>, indexed like <see cref="GltfAsset.Meshes"/>.
     /// <paramref name="materialIds"/> maps glTF material indices; primitives without a material get a
     /// neutral grey.</summary>
@@ -90,7 +80,4 @@ internal static class GltfPreview
         }
         return false;
     }
-
-    private static ReadOnlyMemory<byte> Image(int index, GltfImageData[] images) =>
-        index >= 0 ? images[index].Bytes : ReadOnlyMemory<byte>.Empty;
 }

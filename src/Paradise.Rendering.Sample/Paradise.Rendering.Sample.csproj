@@ -19,6 +19,8 @@
     <PackageReference Include="Paradise.Rendering.Pbr" />
     <!-- The viewer and GI scene preview source GLBs; Paradise.Rendering.Pbr no longer brings the reader in. -->
     <PackageReference Include="Paradise.Assets.Gltf" />
+    <!-- The renderer reads no KTX2; the viewer transcodes a GLB's textures before uploading them. -->
+    <PackageReference Include="Paradise.Assets.Textures" />
     <PackageReference Include="Paradise.Features.Toml" />
   </ItemGroup>
 
